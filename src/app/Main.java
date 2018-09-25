@@ -1,7 +1,5 @@
 package app;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.io.*;
+import app.GUI.MainGUI;
 
 public class Main {
 
@@ -24,6 +22,8 @@ public class Main {
 //            System.out.println(ex.getMessage());
 //        }
 
-        FileFinder.GetFiels("./", ".*.txt$");
+        //FileFinder.GetFiels("./", ".*.txt$");
+        MainGUI gui = new MainGUI();
+        gui.setVisible(true);
     }
 }
