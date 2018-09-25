@@ -42,7 +42,6 @@ public class Finder {
             return null;
         }
         IndexesTable offsetTable = new IndexesTable(template);
-        //HashMap<Character, Integer> offsetTable = new HashMap<Character, Integer>();
         ArrayList<Integer> entery_indexes = new ArrayList<Integer>();
         int sourse_index = templateLen-1;
         int offset_at_last = 0;
@@ -59,6 +58,8 @@ public class Finder {
             offset_at_last=0;
         }
         return entery_indexes;
+
+
 //        for(Entry<Character, Integer> item : offsetTable.entrySet()){
 //            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
 //        }
