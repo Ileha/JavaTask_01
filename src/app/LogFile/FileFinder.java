@@ -1,4 +1,4 @@
-package app;
+package app.LogFile;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package app.GUI;
 
+import app.GUI.Tree.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -11,6 +13,7 @@ public class MainGUI extends JFrame {
     private JTextField extensions = new JTextField("log");
     private JTextField substring = new JTextField("");
     private JButton button = new JButton("Find");
+    private JTree tree;
 
     public MainGUI() {
         super("Program");
@@ -61,6 +64,20 @@ public class MainGUI extends JFrame {
         c.anchor = GridBagConstraints.PAGE_END;
         this.add(button, c);
 
+        c.gridx = 2;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 4;
+        c.anchor = GridBagConstraints.EAST;
+        c.fill = GridBagConstraints.BOTH;
+        TreeFielsNode root = new BagNode("root");
 
+
+        TreeFielsNode underroot = new BagNode("folder 1");
+        underroot.TAdd(new LeafNode("contain"));
+        root.TAdd(underroot);
+        root.TAdd(new LeafNode("file"));
+        tree = new JTree(root);
+        this.add(tree, c);
     }
 }
