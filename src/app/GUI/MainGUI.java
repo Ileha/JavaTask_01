@@ -5,7 +5,6 @@ import app.GUI.Tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.PlainDocument;
 
 public class MainGUI extends JFrame {
 
@@ -26,10 +25,10 @@ public class MainGUI extends JFrame {
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 1;
-        c.insets = new Insets(2,2,2,2);
-        c.anchor = GridBagConstraints.NORTH;
+        c.insets = new Insets(5,5,5,5);
+        c.anchor = GridBagConstraints.PAGE_START;
         c.weightx = 1;
-        c.weighty = 1;
+        c.weighty = 0;
         this.add(new JLabel("Puth: "), c);
 
         c.gridx = 1;
@@ -68,10 +67,10 @@ public class MainGUI extends JFrame {
         c.gridy = 0;
         c.gridwidth = 1;
         c.gridheight = 4;
+        c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH;
         TreeFielsNode root = new BagNode("root");
-
 
         TreeFielsNode underroot = new BagNode("folder 1");
         underroot.TAdd(new LeafNode("contain"));
