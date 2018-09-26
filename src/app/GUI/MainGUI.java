@@ -5,6 +5,8 @@ import app.GUI.Tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.tree.*;
+import javax.swing.event.*;
 
 public class MainGUI extends JFrame {
 
@@ -70,13 +72,31 @@ public class MainGUI extends JFrame {
         c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH;
-        TreeFielsNode root = new BagNode("root");
+        TreeFilesNode root = new TreeFilesNode("root");
+        root.Add(new LeafNode("file 1"));
+        root.Add(new LeafNode("file 2"));
+        BagNode bag = new BagNode("dir 1");
+        root.Add(bag);
+        bag.Add(new LeafNode("file 123"));
+        bag.Add(new LeafNode("file 321"));
+        tree = new JTree((TreeModel)root);
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                if(selRow != -1) {
+                    if(e.getClickCount() == 2) {
 
-        TreeFielsNode underroot = new BagNode("folder 1");
-        underroot.TAdd(new LeafNode("contain"));
-        root.TAdd(underroot);
-        root.TAdd(new LeafNode("file"));
-        tree = new JTree(root);
+                        System.out.printf("double - %s\n", selPath.getLastPathComponent().toString());
+                    }
+                }
+            }
+        });
+
         this.add(tree, c);
+
+        JScrollPane scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        this.add(scrollPane, c);
     }
 }

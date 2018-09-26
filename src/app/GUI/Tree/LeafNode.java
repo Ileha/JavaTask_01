@@ -1,52 +1,46 @@
 package app.GUI.Tree;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javax.swing.tree.TreeNode;
+import java.util.Enumeration;
 
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreePath;
-
-public class LeafNode extends TreeFielsNode {
+public class LeafNode extends IFileNode {
     public LeafNode(String name){
         super(name);
     }
 
     @Override
-    protected TreeFielsNode TGetChild(int index) {
-        return null;
-    }
-
-    @Override
-    protected int TGetIndexOfChild(TreeFielsNode child) {
-        return -1;
-    }
-
-    @Override
-    public void TAdd(TreeFielsNode child) {
+    protected void OnAdd(IFileNode child) {
         throw new NotImplementedException();
     }
 
     @Override
-    protected int TChildCount() {
-        return 0;
+    public TreeNode getChildAt(int childIndex) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void addTreeModelListener(TreeModelListener l) {
-
+    public int getChildCount() {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void removeTreeModelListener(TreeModelListener l) {
-
+    public int getIndex(TreeNode node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public boolean isLeaf(Object node) {
+    public boolean getAllowsChildren() {
+        return false;
+    }
+
+    @Override
+    public boolean isLeaf() {
         return true;
     }
 
     @Override
-    public void valueForPathChanged(TreePath path, Object newValue) {
-
+    public Enumeration children() {
+        throw new NotImplementedException();
     }
 }

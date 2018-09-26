@@ -1,27 +1,37 @@
 package app.GUI.Tree;
 
 import java.util.ArrayList;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+import javax.swing.tree.TreeNode;
 
-public class BagNode extends TreeFielsNode {
-    private ArrayList<TreeFielsNode> bag = new ArrayList<TreeFielsNode>();
+public class BagNode extends IFileNode implements Enumeration {
+    private ArrayList<IFileNode> bag = new ArrayList<IFileNode>();
+    private int enumeration_iterator = 0;
 
     public BagNode(String name) {
         super(name);
     }
 
     @Override
-    protected TreeFielsNode TGetChild(int index) {
-        //System.out.printf("%s\n", index);
-        return bag.get(index);
+    protected void OnAdd(IFileNode child) {
+        bag.add(child);
     }
 
     @Override
-    protected int TGetIndexOfChild(TreeFielsNode child) {
+    public TreeNode getChildAt(int childIndex) {
+        return bag.get(childIndex);
+    }
+
+    @Override
+    public int getChildCount() {
+        return bag.size();
+    }
+
+    @Override
+    public int getIndex(TreeNode node) {
         int res = -1;
         for (int i=0; i<bag.size(); i++) {
-            if (bag.get(i) == child){
+            if (bag.get(i) == node){
                 res=i;
                 break;
             }
@@ -30,41 +40,35 @@ public class BagNode extends TreeFielsNode {
     }
 
     @Override
-    public void TAdd(TreeFielsNode child) {
-        child.root=root;
-        bag.add(child);
+    public boolean getAllowsChildren() {
+        return true;
     }
 
     @Override
-    public void TSetRoot(TreeFielsNode root) {
-        super.TSetRoot(root);
-        for (int i = 0; i < bag.size(); i++) {
-            bag.get(i).TSetRoot(root);
-        }
-    }
-
-    @Override
-    protected int TChildCount() {
-        return bag.size();
-    }
-
-    @Override
-    public void addTreeModelListener(TreeModelListener l) {
-
-    }
-
-    @Override
-    public void removeTreeModelListener(TreeModelListener l) {
-
-    }
-
-    @Override
-    public boolean isLeaf(Object node) {
+    public boolean isLeaf() {
         return false;
     }
 
     @Override
-    public void valueForPathChanged(TreePath path, Object newValue) {
+    public Enumeration children() {
+        enumeration_iterator = 0;
+        return this;
+    }
 
+    @Override
+    public boolean hasMoreElements() {
+        if (enumeration_iterator == bag.size()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    @Override
+    public Object nextElement() {
+        IFileNode res = bag.get(enumeration_iterator);
+        enumeration_iterator++;
+        return res;
     }
 }
