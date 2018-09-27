@@ -4,10 +4,10 @@ import app.GUI.Tree.LeafNode;
 import java.io.File;
 
 public class FileNode extends LeafNode {
-    public File file;
+    public String file;
 
-    public FileNode(String name, File log_file) {
+    public FileNode(String name, String text) {
         super(name);
-        file = log_file;
+        file = text;
     }
 }
