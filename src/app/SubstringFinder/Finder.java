@@ -1,4 +1,4 @@
-package app;
+package app.SubstringFinder;
 import java.util.HashMap;
 import java.util.ArrayList;
 
