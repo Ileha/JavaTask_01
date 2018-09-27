@@ -1,6 +1,5 @@
 package app.GUI.Tree;
 
-import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeModel;
 import javax.swing.event.TreeModelListener;
@@ -24,13 +23,9 @@ public class TreeFilesNode extends BagNode implements TreeModel {
     }
 
     public void RemoveAll() {
-        int[] indexes = new int[bag.size()];
-        for (int i = 0; i < indexes.length; i++) {
-            indexes[i] = i;
+        while (bag.size() > 0) {
+            bag.get(0).Remove();
         }
-        TreeModelEvent e = new TreeModelEvent(this, new TreePath(this), indexes ,bag.toArray());
-        ExecuteEvent((listener) -> listener.treeNodesRemoved(e));
-        bag.clear();
     }
 
     @Override

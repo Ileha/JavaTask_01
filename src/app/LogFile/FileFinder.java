@@ -4,9 +4,6 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import app.GUI.Tree.*;
-import app.*;
-
-import javax.swing.*;
 
 public class FileFinder {
     public static void GetFiels(IFileNode out, String path, String pattern, FindExpression FindFunc) {

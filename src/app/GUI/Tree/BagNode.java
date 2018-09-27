@@ -24,6 +24,7 @@ public class BagNode extends IFileNode implements Enumeration {
         childs[0] = node;
         TreeModelEvent e = new TreeModelEvent(this, path, indexes ,childs);
         TGetRoot().ExecuteEvent((listener) -> listener.treeNodesRemoved(e));
+        bag.remove(indexes[0]);
     }
 
     @Override

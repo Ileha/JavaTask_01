@@ -1,6 +1,6 @@
 package app.LogFile;
 
-import app.SubstringNotFound;
+import app.SubstringFinder.SubstringNotFound;
 
 import java.io.File;
 import java.io.FileNotFoundException;

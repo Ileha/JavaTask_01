@@ -38,6 +38,7 @@ public abstract class IFileNode implements TreeNode {
     public final void Remove() {
         try {
             _parent.OnRemove(this);
+            _parent = null;
         }
         catch (Exception err) {}
     }

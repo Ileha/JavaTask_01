@@ -1,20 +1,23 @@
 package app.GUI;
 
 import app.GUI.Tree.*;
-
+import app.LogFile.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
-import javax.swing.event.*;
+import java.util.*;
+import java.io.*;
+import app.SubstringFinder.Finder;
 
 public class MainGUI extends JFrame {
 
     private JTextField puth = new JTextField("");
-    private JTextField extensions = new JTextField("log");
+    private JTextField extensions = new JTextField(".txt");
     private JTextField substring = new JTextField("");
     private JButton button = new JButton("Find");
-    private JTree tree;
+    private TreeFilesNode main_node = new TreeFilesNode("root");
+    private JTree tree = new JTree((TreeModel) main_node);
 
     public MainGUI() {
         super("Program");
@@ -64,7 +67,27 @@ public class MainGUI extends JFrame {
         c.gridwidth = 2;
         c.anchor = GridBagConstraints.PAGE_END;
         this.add(button, c);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.printf("start finding\n");
 
+                main_node.RemoveAll();
+                FileFinder.GetFiels(main_node, puth.getText(), extensions.getText(), (file) -> {
+                    FileReader reader = new FileReader(file);
+                    Scanner in = new Scanner(reader).useDelimiter("\n");
+                    StringBuilder data = new StringBuilder();
+                    while (in.hasNext()) {
+                        data.append(in.next());
+                        data.append("\n");
+                    }
+                    ArrayList<Integer> indexes = Finder.GetEntries(data.toString(), substring.getText());
+                    return new FileNode(file.getName(), data.toString(), indexes, substring.getText().length());
+                });
+
+                System.out.printf("end finding\n");
+            }
+        });
         c.gridx = 2;
         c.gridy = 0;
         c.gridwidth = 1;
@@ -72,14 +95,7 @@ public class MainGUI extends JFrame {
         c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH;
-        TreeFilesNode root = new TreeFilesNode("root");
-        root.Add(new LeafNode("file 1"));
-        root.Add(new LeafNode("file 2"));
-        BagNode bag = new BagNode("dir 1");
-        root.Add(bag);
-        bag.Add(new LeafNode("file 123"));
-        bag.Add(new LeafNode("file 321"));
-        tree = new JTree((TreeModel)root);
+
         tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -87,16 +103,24 @@ public class MainGUI extends JFrame {
                 TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
                 if(selRow != -1) {
                     if(e.getClickCount() == 2) {
-
                         System.out.printf("double - %s\n", selPath.getLastPathComponent().toString());
+                        IFileNode click = (IFileNode)selPath.getLastPathComponent();
+                        if (click.isLeaf()) {
+                            LogsWindow win = new LogsWindow((FileNode) click, getX(), getY());
+                            win.setVisible(true);
+                        }
+                        //java.awt.EventQueue.invokeLater(() -> {
+                        //});
                     }
                 }
             }
         });
 
-        this.add(tree, c);
-
         JScrollPane scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.add(scrollPane, c);
+    }
+
+    private void CreateTree(IFileNode root) {
+
     }
 }
