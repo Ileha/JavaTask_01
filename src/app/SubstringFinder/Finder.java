@@ -1,4 +1,6 @@
 package app.SubstringFinder;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -39,7 +41,7 @@ public class Finder {
         int sourceLen = source.length();
         int templateLen = template.length();
         if (templateLen > sourceLen) {
-            return null;
+            throw new SubstringNotFound("small text");
         }
         IndexesTable offsetTable = new IndexesTable(template);
         ArrayList<Integer> entery_indexes = new ArrayList<Integer>();
@@ -64,5 +66,48 @@ public class Finder {
 //        for(Entry<Character, Integer> item : offsetTable.entrySet()){
 //            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
 //        }
+    }
+
+    private static int ReadShift(char[] array, int shift, InputStreamReader source) {
+        int res = 0;
+        for (int i = 0; i < array.length-shift; i++) {
+            array[i] = array[i+shift];
+        }
+        try {
+            res = source.read(array, array.length-shift, shift);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public static ArrayList<Integer> GetEntries(InputStreamReader source, String template) throws SubstringNotFound {
+        char[] template_arr = template.toCharArray();
+        char[] source_buff = new char[template_arr.length];
+        int read_count = ReadShift(source_buff, source_buff.length, source);
+        if (read_count < source_buff.length) {throw new SubstringNotFound("small text");}
+
+        IndexesTable offsetTable = new IndexesTable(template);
+        ArrayList<Integer> entery_indexes = new ArrayList<Integer>();
+
+        int sourse_index = read_count;
+        int offset_at_last = 0;
+        while (true) {
+            while(source_buff[source_buff.length-(1+offset_at_last)] == template_arr[template_arr.length-(1+offset_at_last)]) {
+                offset_at_last++;
+                if (offset_at_last == template_arr.length){
+                    entery_indexes.add(sourse_index-template_arr.length);
+                    offset_at_last=0;
+                    break;
+                }
+            }
+            int shift = offsetTable.Get(source_buff[source_buff.length-(1+offset_at_last)]);
+            read_count = ReadShift(source_buff, shift, source);
+            if (read_count != shift) { break; }
+            sourse_index+=read_count;
+            offset_at_last=0;
+        }
+        if (entery_indexes.size() == 0) { throw new SubstringNotFound("hasn`t substring"); }
+        return entery_indexes;
     }
 }
