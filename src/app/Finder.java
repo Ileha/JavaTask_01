@@ -35,7 +35,7 @@ class IndexesTable {
 }
 
 public class Finder {
-    public static ArrayList<Integer> GetEntries(String source, String template) {
+    public static ArrayList<Integer> GetEntries(String source, String template) throws SubstringNotFound {
         int sourceLen = source.length();
         int templateLen = template.length();
         if (templateLen > sourceLen) {
@@ -57,6 +57,7 @@ public class Finder {
             sourse_index+=offsetTable.Get(source.charAt(sourse_index));
             offset_at_last=0;
         }
+        if (entery_indexes.size() == 0) { throw new SubstringNotFound("hasn`t substring"); }
         return entery_indexes;
 
 
