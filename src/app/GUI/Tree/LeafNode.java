@@ -10,6 +10,9 @@ public class LeafNode extends IFileNode {
     }
 
     @Override
+    protected void OnRemove(IFileNode node) { throw new NotImplementedException(); }
+
+    @Override
     protected void OnAdd(IFileNode child) {
         throw new NotImplementedException();
     }

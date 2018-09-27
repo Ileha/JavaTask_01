@@ -1,6 +1,8 @@
 package app.GUI.Tree;
 
+import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.event.*;
 import java.util.Enumeration;
 
@@ -11,6 +13,14 @@ public abstract class IFileNode implements TreeNode {
 
     public IFileNode(String name) {
         this.name = name;
+    }
+
+    protected final TreeFilesNode TGetRoot() {
+        IFileNode node = this;
+        while (node._parent != null) {
+            node = node._parent;
+        }
+        return (TreeFilesNode)node;
     }
 
     @Override
@@ -25,7 +35,14 @@ public abstract class IFileNode implements TreeNode {
         }
         catch (Exception err) {}
     }
+    public final void Remove() {
+        try {
+            _parent.OnRemove(this);
+        }
+        catch (Exception err) {}
+    }
 
+    protected abstract void OnRemove(IFileNode node);
     protected abstract void OnAdd(IFileNode child);
     @Override
     public abstract TreeNode getChildAt(int childIndex);

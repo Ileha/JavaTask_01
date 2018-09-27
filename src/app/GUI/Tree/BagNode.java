@@ -2,10 +2,12 @@ package app.GUI.Tree;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import javax.swing.tree.TreeNode;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.tree.*;
+
 
 public class BagNode extends IFileNode implements Enumeration {
-    private ArrayList<IFileNode> bag = new ArrayList<IFileNode>();
+    protected ArrayList<IFileNode> bag = new ArrayList<IFileNode>();
     private int enumeration_iterator = 0;
 
     public BagNode(String name) {
@@ -13,8 +15,27 @@ public class BagNode extends IFileNode implements Enumeration {
     }
 
     @Override
+    protected void OnRemove(IFileNode node) {
+        int[] indexes = new int[1];
+        indexes[0] = getIndex(node);
+        if (indexes[0] == -1) { return; }
+        TreePath path = new TreePath(this);
+        Object[] childs = new Object[1];
+        childs[0] = node;
+        TreeModelEvent e = new TreeModelEvent(this, path, indexes ,childs);
+        TGetRoot().ExecuteEvent((listener) -> listener.treeNodesRemoved(e));
+    }
+
+    @Override
     protected void OnAdd(IFileNode child) {
         bag.add(child);
+        TreePath path = new TreePath(this);
+        int[] indexes = new int[1];
+        indexes[0] = bag.size()-1;
+        Object[] childs = new Object[1];
+        childs[0] = child;
+        TreeModelEvent e = new TreeModelEvent(this, path, indexes ,childs);
+        TGetRoot().ExecuteEvent((listener) -> listener.treeNodesInserted(e));
     }
 
     @Override
