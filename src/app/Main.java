@@ -1,24 +1,51 @@
 package app;
+
+import java.io.*;
 import app.GUI.MainGUI;
+import app.GUI.Text.*;
+import app.SubstringFinder.Finder;
+import app.SubstringFinder.SubstringNotFound;
+
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-//        Scanner in = null;
-//        try (FileReader reader = new FileReader("data.txt")) {
-//            in = new Scanner(reader).useDelimiter("\n");
-//            String data = "";
-//            while (in.hasNext()) {
-//                data += in.next();
-//            }
-//            System.out.printf("%s\n", data);
-//            ArrayList<Integer> indexes = Finder.GetEntries(data, "степ");
-//            for (int i = 0; i < indexes.size(); i++) {
-//                int index = indexes.get(i);
-//                System.out.printf("%s, %s\n", index, data.substring(index, index + 10));
+//        ProcessDoc doc = null;
+//        try {
+//            doc = new ProcessDoc(new File("task.txt"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.printf("%s", doc.text);
+
+//        ArrayList<Integer> indexed = null;
+//        try(FileReader reader = new FileReader("task.txt"))
+//        {
+//            try {
+//                indexed = Finder.GetEntries(reader, "па");
+//            } catch (SubstringNotFound substringNotFound) {
+//                substringNotFound.printStackTrace();
 //            }
 //        }
-//        catch(IOException ex) {
+//        catch(IOException ex){
+//            System.out.println(ex.getMessage());
+//        }
+//
+//        try(FileReader reader = new FileReader("task.txt"))
+//        {
+//            Scanner in = new Scanner(reader);
+//            String res = "";
+//            while (in.hasNextLine()) {
+//                res += in.nextLine()+"\n";
+//            }
+//            for (Integer i : indexed) {
+//                System.out.printf("%s\n", res.substring(i,i+10));
+//            }
+//        }
+//        catch(IOException ex){
+//
 //            System.out.println(ex.getMessage());
 //        }
 

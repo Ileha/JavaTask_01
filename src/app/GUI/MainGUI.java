@@ -82,7 +82,7 @@ public class MainGUI extends JFrame {
                         data.append("\n");
                     }
                     ArrayList<Integer> indexes = Finder.GetEntries(data.toString(), substring.getText());
-                    return new FileNode(file.getName(), data.toString(), indexes, substring.getText().length());
+                    return new FileNode(file.getName(), file, indexes, substring.getText().length());
                 });
 
                 System.out.printf("end finding\n");

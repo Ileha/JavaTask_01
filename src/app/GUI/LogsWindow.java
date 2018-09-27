@@ -1,6 +1,8 @@
 package app.GUI;
 
+import app.GUI.Text.ProcessDoc;
 import app.LogFile.FileNode;
+import com.sun.xml.internal.ws.api.streaming.XMLStreamWriterFactory;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -84,11 +86,13 @@ public class LogsWindow extends JFrame  {
 
         doc.setEditable(false);
         try {
+            DefaultStyledDocument
             Document d = doc.getDocument();
+            //doc.setDocument(d);
             Style normal = doc.addStyle("normal", null);
             StyleConstants.setFontFamily(normal, "Times New Roman");
-            StyleConstants.setFontSize(normal, 16);
-            d.insertString(d.getLength(), data.file, normal);
+//            StyleConstants.setFontSize(normal, 16);
+//            d.insertString(d.getLength(), data.file, normal);
         } catch (Exception e) {
             e.printStackTrace();
         }
