@@ -32,9 +32,11 @@ public class LogsWindow extends JFrame  {
     private JButton next = new JButton(">>");
     private JButton previous = new JButton("<<");
     private JTextField current_count;//кол-во колонок ограничивается кол-вом знаков
-    private JTextPane doc = new JTextPane();
+    //private JTextPane doc = new JTextPane();
     private int current_index = 0;
     private FileNode data;
+    private JTextArea textArea = new JTextArea();
+    private JScrollBar scrollBar = new JScrollBar(Adjustable.VERTICAL);
 
     public LogsWindow(FileNode data, int pos_x, int pos_y) {
         super(data.toString());
@@ -54,15 +56,41 @@ public class LogsWindow extends JFrame  {
         c.weightx = 1;
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
-        this.add(doc, c);
+        textArea.setEditable(false);
+        add(textArea, c);
+        textArea.setLineWrap(true);
+        //textArea.getRows()
 
-        JScrollPane scrollPane = new JScrollPane(doc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        this.add(scrollPane, c);
+
+        c.gridx = 4;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.VERTICAL;
+        c.weightx = 0;
+        this.add(scrollBar, c);
+        scrollBar.setMinimum(0);
+        scrollBar.setValue(1); // меняем число до установки слушателя
+        scrollBar.setMaximum(100);
+
+        scrollBar.addAdjustmentListener(
+                new AdjustmentListener() {
+                    public void adjustmentValueChanged(AdjustmentEvent event) {
+                        System.out.printf("%s\n", event.getValue());
+                        //textArea.setText("");
+                    }
+                });
+
+        //scrollPane.setValue(0);
+        //this.add(doc, c);
+        //JScrollPane scrollPane = new JScrollPane(doc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //this.add(scrollPane, c);
 
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 1;
         c.weighty = 0;
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(previous, c);
 
@@ -77,16 +105,17 @@ public class LogsWindow extends JFrame  {
         c.gridx = 2;
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        this.add(new JLabel(max_count), c);
+        this.add(new JLabel(String.format("/%s", max_count)), c);
 
         c.gridx = 3;
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(next, c);
 
+        /*
         doc.setEditable(false);
         try {
-            DefaultStyledDocument
+            //DefaultStyledDocument
             Document d = doc.getDocument();
             //doc.setDocument(d);
             Style normal = doc.addStyle("normal", null);
@@ -96,13 +125,14 @@ public class LogsWindow extends JFrame  {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
 
 //        SimpleAttributeSet sas = new SimpleAttributeSet();
 //        StyleConstants.setForeground(sas, Color.YELLOW);
 
-        DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+        //DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
 
-
+        /*
         for (int i = 0; i < data.indexes.size(); i++) {
             try {
                 doc.getHighlighter().addHighlight(data.indexes.get(i), data.indexes.get(i)+data.substring_char_count, highlightPainter);
@@ -110,9 +140,10 @@ public class LogsWindow extends JFrame  {
                 e.printStackTrace();
             }
         }
+        */
     }
 
     private void SetCaretPosition(int index) {
-        doc.setCaretPosition(data.indexes.get(index));
+        //doc.setCaretPosition(data.indexes.get(index));
     }
 }

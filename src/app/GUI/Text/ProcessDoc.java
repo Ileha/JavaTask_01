@@ -5,15 +5,15 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
 import java.io.*;
 
-public class ProcessDoc implements Document {
+public class ProcessDoc {
     private RandomAccessFile file;
-    public String text;
+    private StringBuilder data;
+    private int offset;
 
     public ProcessDoc(File file) throws IOException {
         this.file = new RandomAccessFile(file, "r");
-
-        StringBuilder data = new StringBuilder();
-
+        data = new StringBuilder();
+        /*
         byte[] buffer = new byte[1024];
         int c = 0;
 
@@ -21,96 +21,48 @@ public class ProcessDoc implements Document {
             data.append(new String(buffer,0, c, "UTF-8"));
         }
         text = data.toString();
+        */
     }
 
-    @Override
-    public int getLength() {
-        int res = -1;
+    public long Getlenght() {
+        long res = 0;
         try {
-            res = (int)file.length();
+             res = file.length();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return res;
     }
 
-    @Override
-    public void addDocumentListener(DocumentListener listener) {
+    /*
 
-    }
+    |........|............|...............|
+    |....|...........|....................|
+    |..................|..|......|........|
+    */
 
-    @Override
-    public void removeDocumentListener(DocumentListener listener) {
+    public String GetStringData(int start, int lengt) {
+        int start_r_r = -(start-offset);
+        int lenght_r_r = (start+lengt)-(offset+data.length());
 
-    }
+        try {
+            if (start_r_r>0){
+                file.seek(start);
+                //read
+            }
+            else {
+                data.delete(0, Math.abs(start_r_r));
+            }
 
-    @Override
-    public void addUndoableEditListener(UndoableEditListener listener) {
+            if(lenght_r_r > 0) {
+                file.seek(offset+data.length());
+            }
+            else {
 
-    }
-
-    @Override
-    public void removeUndoableEditListener(UndoableEditListener listener) {
-
-    }
-
-    @Override
-    public Object getProperty(Object key) {
-        return null;
-    }
-
-    @Override
-    public void putProperty(Object key, Object value) {
-
-    }
-
-    @Override
-    public void remove(int offs, int len) throws BadLocationException {
-
-    }
-
-    @Override
-    public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-
-    }
-
-    @Override
-    public String getText(int offset, int length) throws BadLocationException {
-        return text.substring(offset, offset+length);
-    }
-
-    @Override
-    public void getText(int offset, int length, Segment txt) throws BadLocationException {
-        text = getText(offset, length);
-    }
-
-    @Override
-    public Position getStartPosition() {
-        return null;
-    }
-
-    @Override
-    public Position getEndPosition() {
-        return null;
-    }
-
-    @Override
-    public Position createPosition(int offs) throws BadLocationException {
-        return null;
-    }
-
-    @Override
-    public Element[] getRootElements() {
-        return new Element[0];
-    }
-
-    @Override
-    public Element getDefaultRootElement() {
-        return null;
-    }
-
-    @Override
-    public void render(Runnable r) {
-
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
