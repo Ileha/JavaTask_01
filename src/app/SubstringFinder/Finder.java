@@ -37,7 +37,7 @@ class IndexesTable {
 }
 
 public class Finder {
-    public static ArrayList<Integer> GetEntries(String source, String template) throws SubstringNotFound {
+    public static int[] GetEntries(String source, String template) throws SubstringNotFound {
         int sourceLen = source.length();
         int templateLen = template.length();
         if (templateLen > sourceLen) {
@@ -60,7 +60,7 @@ public class Finder {
             offset_at_last=0;
         }
         if (entery_indexes.size() == 0) { throw new SubstringNotFound("hasn`t substring"); }
-        return entery_indexes;
+        return entery_indexes.stream().mapToInt(i->i).toArray();
 
 
 //        for(Entry<Character, Integer> item : offsetTable.entrySet()){
@@ -81,7 +81,7 @@ public class Finder {
         return res;
     }
 
-    public static ArrayList<Integer> GetEntries(InputStreamReader source, String template) throws SubstringNotFound {
+    public static int[] GetEntries(InputStreamReader source, String template) throws SubstringNotFound {
         char[] template_arr = template.toCharArray();
         char[] source_buff = new char[template_arr.length];
         int read_count = ReadShift(source_buff, source_buff.length, source);
@@ -108,6 +108,40 @@ public class Finder {
             offset_at_last=0;
         }
         if (entery_indexes.size() == 0) { throw new SubstringNotFound("hasn`t substring"); }
-        return entery_indexes;
+        return entery_indexes.stream().mapToInt(i->i).toArray();
+    }
+
+    public static double[] GetEntriesRelative(InputStreamReader source, String template) throws SubstringNotFound {
+        char[] template_arr = template.toCharArray();
+        char[] source_buff = new char[template_arr.length];
+        int read_count = ReadShift(source_buff, source_buff.length, source);
+        if (read_count < source_buff.length) {throw new SubstringNotFound("small text");}
+
+        IndexesTable offsetTable = new IndexesTable(template);
+        ArrayList<Integer> entery_indexes = new ArrayList<Integer>();
+
+        double char_count;
+        int sourse_index = read_count;
+        int offset_at_last = 0;
+        while (true) {
+            while(source_buff[source_buff.length-(1+offset_at_last)] == template_arr[template_arr.length-(1+offset_at_last)]) {
+                offset_at_last++;
+                if (offset_at_last == template_arr.length){
+                    entery_indexes.add(sourse_index-template_arr.length);
+                    offset_at_last=0;
+                    break;
+                }
+            }
+            int shift = offsetTable.Get(source_buff[source_buff.length-(1+offset_at_last)]);
+            read_count = ReadShift(source_buff, shift, source);
+            if (read_count != shift) {
+                char_count = sourse_index+shift;
+                break;
+            }
+            sourse_index+=read_count;
+            offset_at_last=0;
+        }
+        if (entery_indexes.size() == 0) { throw new SubstringNotFound("hasn`t substring"); }
+        return entery_indexes.stream().mapToDouble(i -> ((double)i)/char_count).toArray();
     }
 }

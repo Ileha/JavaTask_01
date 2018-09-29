@@ -2,7 +2,8 @@ package app.GUI;
 
 import app.GUI.Text.ProcessDoc;
 import app.LogFile.FileNode;
-import com.sun.xml.internal.ws.api.streaming.XMLStreamWriterFactory;
+import app.SubstringFinder.Finder;
+import app.SubstringFinder.SubstringNotFound;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -14,7 +15,6 @@ class DigitFilter extends DocumentFilter {
 
     @Override
     public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-
         if (string.matches(DIGITS)) {
             super.insertString(fb, offset, string, attr);
         }
@@ -32,15 +32,18 @@ public class LogsWindow extends JFrame  {
     private JButton next = new JButton(">>");
     private JButton previous = new JButton("<<");
     private JTextField current_count;//кол-во колонок ограничивается кол-вом знаков
-    //private JTextPane doc = new JTextPane();
     private int current_index = 0;
     private FileNode data;
     private JTextArea textArea = new JTextArea();
     private JScrollBar scrollBar = new JScrollBar(Adjustable.VERTICAL);
+    private ProcessDoc doc = null;
+    private DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
 
     public LogsWindow(FileNode data, int pos_x, int pos_y) {
         super(data.toString());
         this.data = data;
+        doc = new ProcessDoc(data.file);
+
         this.setBounds(20+pos_x, 20+pos_y, 500, 500);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -59,8 +62,6 @@ public class LogsWindow extends JFrame  {
         textArea.setEditable(false);
         add(textArea, c);
         textArea.setLineWrap(true);
-        //textArea.getRows()
-
 
         c.gridx = 4;
         c.gridy = 0;
@@ -70,21 +71,34 @@ public class LogsWindow extends JFrame  {
         c.weightx = 0;
         this.add(scrollBar, c);
         scrollBar.setMinimum(0);
-        scrollBar.setValue(1); // меняем число до установки слушателя
-        scrollBar.setMaximum(100);
+        scrollBar.setValue(1);
+        scrollBar.setMaximum((int) doc.Getlenght());
+        double max = scrollBar.getMaximum();
 
         scrollBar.addAdjustmentListener(
                 new AdjustmentListener() {
                     public void adjustmentValueChanged(AdjustmentEvent event) {
-                        System.out.printf("%s\n", event.getValue());
-                        //textArea.setText("");
+                        int char_count = 10000;
+                        double current = event.getValue();
+
+                        String text = doc.GetBitOfText(current/max, char_count);
+                        textArea.setText(text);
+                        try {
+                            int[] current_indexes = Finder.GetEntries(text, data.word);
+                            for (int i = 0; i < current_indexes.length; i++) {
+                            try {
+                                textArea.getHighlighter().addHighlight(current_indexes[i], current_indexes[i]+data.substring_char_count(), highlightPainter);
+                            } catch (BadLocationException e) {
+                                e.printStackTrace();
+                                break;
+                            }
+                        }
+                        } catch (SubstringNotFound substringNotFound) {
+                            //substringNotFound.printStackTrace();
+                        }
                     }
                 });
-
-        //scrollPane.setValue(0);
-        //this.add(doc, c);
-        //JScrollPane scrollPane = new JScrollPane(doc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        //this.add(scrollPane, c);
+        scrollBar.setValue(0);
 
         c.gridx = 0;
         c.gridy = 1;
@@ -97,7 +111,7 @@ public class LogsWindow extends JFrame  {
         c.gridx = 1;
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        String max_count = String.format("%s", data.indexes.size());
+        String max_count = String.format("%s", data.indexes.length);
         current_count = new JTextField(max_count.length());
         this.add(current_count, c);
         ((PlainDocument)current_count.getDocument()).setDocumentFilter(new DigitFilter());
@@ -111,36 +125,6 @@ public class LogsWindow extends JFrame  {
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(next, c);
-
-        /*
-        doc.setEditable(false);
-        try {
-            //DefaultStyledDocument
-            Document d = doc.getDocument();
-            //doc.setDocument(d);
-            Style normal = doc.addStyle("normal", null);
-            StyleConstants.setFontFamily(normal, "Times New Roman");
-//            StyleConstants.setFontSize(normal, 16);
-//            d.insertString(d.getLength(), data.file, normal);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
-
-//        SimpleAttributeSet sas = new SimpleAttributeSet();
-//        StyleConstants.setForeground(sas, Color.YELLOW);
-
-        //DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
-
-        /*
-        for (int i = 0; i < data.indexes.size(); i++) {
-            try {
-                doc.getHighlighter().addHighlight(data.indexes.get(i), data.indexes.get(i)+data.substring_char_count, highlightPainter);
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-        }
-        */
     }
 
     private void SetCaretPosition(int index) {

@@ -1,37 +1,55 @@
 package app.GUI.Text;
 
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.*;
 import java.io.*;
 
 public class ProcessDoc {
-    private RandomAccessFile file;
+    private RandomAccessFile randomAccessFile;
     private StringBuilder data;
-    private int offset;
 
-    public ProcessDoc(File file) throws IOException {
-        this.file = new RandomAccessFile(file, "r");
+    public ProcessDoc(File file) {
         data = new StringBuilder();
-        /*
-        byte[] buffer = new byte[1024];
-        int c = 0;
-
-        while ((c = this.file.read(buffer, 0, buffer.length))!=-1) {
-            data.append(new String(buffer,0, c, "UTF-8"));
+        try {
+            randomAccessFile = new RandomAccessFile(file, "r");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        text = data.toString();
-        */
     }
 
     public long Getlenght() {
         long res = 0;
         try {
-             res = file.length();
+             res = randomAccessFile.length();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return res;
+    }
+
+    public String GetBitOfText(double persent, int count) {
+        data.delete(0, data.length());
+        long pos = (long)(((double)Getlenght())*persent);
+        try {
+            randomAccessFile.seek(pos);
+            byte[] buffer = new byte[count];
+            int c = 0;
+            int read_count = count;
+
+            while (read_count > 0) {
+                c = randomAccessFile.read(buffer, 0, buffer.length);
+                if (c==-1) { break; }
+                String add_str = new String(buffer,0, c, "UTF-8");
+                int str_lenght = add_str.length();
+                read_count -= str_lenght;
+                if (read_count < 0) {
+                    str_lenght+=read_count;
+                }
+                data.append(add_str.substring(0,str_lenght));
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data.toString();
     }
 
     /*
@@ -41,6 +59,7 @@ public class ProcessDoc {
     |..................|..|......|........|
     */
 
+    /*
     public String GetStringData(int start, int lengt) {
         int start_r_r = -(start-offset);
         int lenght_r_r = (start+lengt)-(offset+data.length());
@@ -65,4 +84,5 @@ public class ProcessDoc {
             e.printStackTrace();
         }
     }
+    */
 }

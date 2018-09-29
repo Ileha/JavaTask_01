@@ -12,19 +12,32 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-//        ProcessDoc doc = null;
+        //apachelog.log
 //        try {
-//            doc = new ProcessDoc(new File("task.txt"));
+//            FileReader reader = new FileReader("data.txt");
+//            double[] relative = Finder.GetEntriesRelative(reader,"со");
+//            reader.close();
+//            ProcessDoc doc = new ProcessDoc(new File("data.txt"));
+//
+//            for (int i = 0; i < relative.length; i++) {
+//                System.out.printf("%s\n", doc.GetBitOfText(relative[i], 50));
+//            }
+//        } catch (SubstringNotFound substringNotFound) {
+//            substringNotFound.printStackTrace();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//        System.out.printf("%s", doc.text);
+
+        //System.out.printf("%s", doc.GetLine(1, 10));
+//        System.out.printf("%s", doc.GetBitOfText(0.5, 5));
 
 //        ArrayList<Integer> indexed = null;
 //        try(FileReader reader = new FileReader("task.txt"))
 //        {
 //            try {
-//                indexed = Finder.GetEntries(reader, "па");
+//                indexed = Finder.GetEntries(reader, "\n");
 //            } catch (SubstringNotFound substringNotFound) {
 //                substringNotFound.printStackTrace();
 //            }
@@ -41,7 +54,7 @@ public class Main {
 //                res += in.nextLine()+"\n";
 //            }
 //            for (Integer i : indexed) {
-//                System.out.printf("%s\n", res.substring(i,i+10));
+//                System.out.printf("%s\n", res.substring(i-5,i));
 //            }
 //        }
 //        catch(IOException ex){

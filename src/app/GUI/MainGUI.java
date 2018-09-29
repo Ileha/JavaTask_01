@@ -75,14 +75,15 @@ public class MainGUI extends JFrame {
                 main_node.RemoveAll();
                 FileFinder.GetFiels(main_node, puth.getText(), extensions.getText(), (file) -> {
                     FileReader reader = new FileReader(file);
-                    Scanner in = new Scanner(reader).useDelimiter("\n");
-                    StringBuilder data = new StringBuilder();
-                    while (in.hasNext()) {
-                        data.append(in.next());
-                        data.append("\n");
-                    }
-                    ArrayList<Integer> indexes = Finder.GetEntries(data.toString(), substring.getText());
-                    return new FileNode(file.getName(), file, indexes, substring.getText().length());
+//                    Scanner in = new Scanner(reader).useDelimiter("\n");
+//                    StringBuilder data = new StringBuilder();
+//                    while (in.hasNext()) {
+//                        data.append(in.next());
+//                        data.append("\n");
+//                    }
+                    int[] indexes = Finder.GetEntries(reader, substring.getText());
+                    reader.close();
+                    return new FileNode(file.getName(), file, indexes, substring.getText());
                 });
 
                 System.out.printf("end finding\n");
@@ -118,9 +119,5 @@ public class MainGUI extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.add(scrollPane, c);
-    }
-
-    private void CreateTree(IFileNode root) {
-
     }
 }
