@@ -52,6 +52,13 @@ public class ProcessDoc {
         return data.toString();
     }
 
+    public void Dispose() {
+        try {
+            randomAccessFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /*
 
     |........|............|...............|

@@ -28,7 +28,7 @@ class DigitFilter extends DocumentFilter {
     }
 }
 
-public class LogsWindow extends JFrame  {
+public class LogsWindow extends JFrame implements MouseWheelListener  {
     private JButton next = new JButton(">>");
     private JButton previous = new JButton("<<");
     private JTextField current_count;//кол-во колонок ограничивается кол-вом знаков
@@ -38,6 +38,7 @@ public class LogsWindow extends JFrame  {
     private JScrollBar scrollBar = new JScrollBar(Adjustable.VERTICAL);
     private ProcessDoc doc = null;
     private DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+
 
     public LogsWindow(FileNode data, int pos_x, int pos_y) {
         super(data.toString());
@@ -73,31 +74,25 @@ public class LogsWindow extends JFrame  {
         scrollBar.setMinimum(0);
         scrollBar.setValue(1);
         scrollBar.setMaximum((int) doc.Getlenght());
-        double max = scrollBar.getMaximum();
 
-        scrollBar.addAdjustmentListener(
-                new AdjustmentListener() {
-                    public void adjustmentValueChanged(AdjustmentEvent event) {
-                        int char_count = 10000;
-                        double current = event.getValue();
-
-                        String text = doc.GetBitOfText(current/max, char_count);
-                        textArea.setText(text);
-                        try {
-                            int[] current_indexes = Finder.GetEntries(text, data.word);
-                            for (int i = 0; i < current_indexes.length; i++) {
-                            try {
-                                textArea.getHighlighter().addHighlight(current_indexes[i], current_indexes[i]+data.substring_char_count(), highlightPainter);
-                            } catch (BadLocationException e) {
-                                e.printStackTrace();
-                                break;
-                            }
-                        }
-                        } catch (SubstringNotFound substringNotFound) {
-                            //substringNotFound.printStackTrace();
-                        }
+        scrollBar.addAdjustmentListener( e -> {
+            int char_count = 10000;
+            String text = doc.GetBitOfText(e.getValue()/max(), char_count);
+            textArea.setText(text);
+            try {
+                int[] current_indexes = Finder.GetEntries(text, data.word);
+                for (int i = 0; i < current_indexes.length; i++) {
+                    try {
+                        textArea.getHighlighter().addHighlight(current_indexes[i], current_indexes[i]+data.substring_char_count(), highlightPainter);
+                    } catch (BadLocationException ex) {
+                        ex.printStackTrace();
+                        break;
                     }
-                });
+                }
+            } catch (SubstringNotFound substringNotFound) {
+                //substringNotFound.printStackTrace();
+            }
+        } );
         scrollBar.setValue(0);
 
         c.gridx = 0;
@@ -111,10 +106,12 @@ public class LogsWindow extends JFrame  {
         c.gridx = 1;
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        String max_count = String.format("%s", data.indexes.length);
+        String max_count = String.format("%s", data.rel_indexes.length);
         current_count = new JTextField(max_count.length());
         this.add(current_count, c);
         ((PlainDocument)current_count.getDocument()).setDocumentFilter(new DigitFilter());
+        current_count.addActionListener(e -> SetCurrentIndex(Integer.parseInt(e.getActionCommand())));
+        current_count.setText("1");
 
         c.gridx = 2;
         c.gridy = 1;
@@ -125,9 +122,36 @@ public class LogsWindow extends JFrame  {
         c.gridy = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(next, c);
+        next.addActionListener(e -> SetCurrentIndex(current_index+1));
+        previous.addActionListener(e -> SetCurrentIndex(current_index-1));
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                doc.Dispose();
+            }
+        });
+        textArea.addMouseWheelListener(this);
     }
 
-    private void SetCaretPosition(int index) {
-        //doc.setCaretPosition(data.indexes.get(index));
+    private double max() {
+        return scrollBar.getMaximum();
+    }
+
+    private void SetScrollBarValue(double relative) {
+        scrollBar.setValue((int)(max()*relative));
+    }
+    private void SetCurrentIndex(int new_current) {
+        current_index = new_current;
+        current_index = Math.min(data.rel_indexes.length, current_index);
+        current_index = Math.max(1, current_index);
+        String val = String.valueOf(current_index);
+        if (current_count.getText() != val) {
+            current_count.setText(val);
+            SetScrollBarValue(data.rel_indexes[current_index-1]);
+        }
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        scrollBar.setValue(scrollBar.getValue()+e.getWheelRotation()*10);
     }
 }

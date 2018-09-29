@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
-import java.util.*;
 import java.io.*;
 import app.SubstringFinder.Finder;
 
@@ -75,13 +74,7 @@ public class MainGUI extends JFrame {
                 main_node.RemoveAll();
                 FileFinder.GetFiels(main_node, puth.getText(), extensions.getText(), (file) -> {
                     FileReader reader = new FileReader(file);
-//                    Scanner in = new Scanner(reader).useDelimiter("\n");
-//                    StringBuilder data = new StringBuilder();
-//                    while (in.hasNext()) {
-//                        data.append(in.next());
-//                        data.append("\n");
-//                    }
-                    int[] indexes = Finder.GetEntries(reader, substring.getText());
+                    double[] indexes = Finder.GetEntriesRelative(reader, substring.getText());
                     reader.close();
                     return new FileNode(file.getName(), file, indexes, substring.getText());
                 });

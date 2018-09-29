@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 public class FileNode extends LeafNode {
     public File file;
-    public int[] indexes;
+    public double[] rel_indexes;
     public String word;
 
-    public FileNode(String name, File data, int[] indexes, String word) {
+    public FileNode(String name, File data, double[] rel_indexes, String word) {
         super(name);
         file = data;
-        this.indexes = indexes;
+        this.rel_indexes = rel_indexes;
         this.word = word;
     }
 
