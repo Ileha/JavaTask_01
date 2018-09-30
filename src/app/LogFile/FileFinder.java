@@ -1,37 +1,90 @@
 package app.LogFile;
 
 import java.io.*;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import app.GUI.Tree.*;
+import jdk.nashorn.internal.ir.IfNode;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.concurrent.*;
 
 public class FileFinder {
-    public static void GetFiels(IFileNode out, String path, String pattern, FindExpression FindFunc) {
-        HelpGetFiels(out, path, Pattern.compile(pattern), FindFunc);
+    private static ExecutorService executor = Executors.newWorkStealingPool();
+
+    private static Callable callable(ConcurrentLinkedQueue<FileNode> queue, FindExpression FindFunc) {
+        return () -> {
+            FileNode poll_node = null;
+            while ((poll_node = queue.poll()) != null) {
+                try {
+                    String threadName = Thread.currentThread().getName();
+                    System.out.printf("Starn handler task %s\n", threadName);
+                    FindFunc.Action(poll_node);
+                }
+                catch (Exception err) {
+                    poll_node.Remove();
+                }
+            }
+            return 0;
+        };
     }
 
-    private static void HelpGetFiels(IFileNode res, String path, Pattern pattern, FindExpression FindFunc) {
-        File f = new File(path);
-        for (File item : f.listFiles()) {
+    public static void GetFiels(IFileNode out, String path, String pattern, FindExpression FindFunc) {
+        ConcurrentLinkedQueue<FileNode> queue = new ConcurrentLinkedQueue<FileNode>();
+        HelpGetFiels(Pattern.compile(pattern), new File(path), out, queue);
+        List<Callable<Integer>> callables = new ArrayList<Callable<Integer>>();
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+            callables.add(callable(queue, FindFunc));
+        }
+        try {
+            executor.invokeAll(callables);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        IsEmpty(out);
+    }
+
+    private static boolean IsEmpty(IFileNode node) {
+        boolean res = false;
+        try {
+            ArrayList<IFileNode> empty_array = new ArrayList<IFileNode>();
+            for (int i = 0; i < node.getChildCount(); i++) {
+                IFileNode check = (IFileNode)node.getChildAt(i);
+                if (IsEmpty(check)) {
+                    empty_array.add(check);
+                }
+            }
+            for (int i = 0; i < empty_array.size(); i++) {
+                empty_array.get(i).Remove();
+            }
+
+            if (node.getChildCount() == 0) {
+                res = true;
+            }
+        }
+        catch (NotImplementedException err) {}
+        return res;
+    }
+
+    private static void HelpGetFiels(Pattern pattern, File folder, IFileNode bag, ConcurrentLinkedQueue<FileNode> Queue) {
+        for (File item : folder.listFiles()) {
             if (item.isDirectory()) {
                 BagNode node = new BagNode(item.getName());
-                HelpGetFiels(node, item.getPath(), pattern, FindFunc);
+                HelpGetFiels(pattern, item, node, Queue);
                 if (node.getChildCount() > 0) {
-                    res.Add(node);
+                    bag.Add(node);
                 }
             } else {
                 Matcher m = pattern.matcher(item.getName());
                 if (m.find()) {
-                    //System.out.printf("%s\tфайл\n", item.getPath());
-                    try {
-                        IFileNode add = FindFunc.Action(item);
-                        res.Add(FindFunc.Action(item));
-                    }
-                    catch (Exception err) {
-
-                    }
+                    FileNode node = new FileNode(item.getName(), item);
+                    bag.Add(node);
+                    Queue.add(node);
                 }
             }
         }
+
     }
 }

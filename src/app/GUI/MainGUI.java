@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import java.io.*;
 import app.SubstringFinder.Finder;
+import java.util.concurrent.*;
 
 public class MainGUI extends JFrame {
 
@@ -17,6 +18,8 @@ public class MainGUI extends JFrame {
     private JButton button = new JButton("Find");
     private TreeFilesNode main_node = new TreeFilesNode("root");
     private JTree tree = new JTree((TreeModel) main_node);
+    private JLabel process = new JLabel("<html>Choose path, indicate extension,<br> set text for find and press Find</html>");
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
 
     public MainGUI() {
         super("Program");
@@ -65,27 +68,46 @@ public class MainGUI extends JFrame {
         c.gridy = 3;
         c.gridwidth = 2;
         c.anchor = GridBagConstraints.PAGE_END;
+        c.fill = GridBagConstraints.NONE;
+        add(process, c);
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 2;
+        c.anchor = GridBagConstraints.PAGE_END;
+        c.fill = GridBagConstraints.HORIZONTAL;
         this.add(button, c);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.printf("start finding\n");
+                executor.submit(() -> {
+                    process.setText("please wait finding...");
 
-                main_node.RemoveAll();
-                FileFinder.GetFiels(main_node, puth.getText(), extensions.getText(), (file) -> {
-                    FileReader reader = new FileReader(file);
-                    double[] indexes = Finder.GetEntriesRelative(reader, substring.getText());
-                    reader.close();
-                    return new FileNode(file.getName(), file, indexes, substring.getText());
+                    main_node.RemoveAll();
+                    BagNode find_res = new BagNode("results");
+                    FileFinder.GetFiels(find_res, puth.getText(), extensions.getText(), (file_node) -> {
+                        FileReader reader = new FileReader(file_node.file);
+                        try {
+                            file_node.rel_indexes = Finder.GetEntriesRelative(reader, substring.getText());
+                            file_node.word = new String(substring.getText());
+                        }
+                        catch (Exception err) {
+                            throw err;
+                        }
+                        finally {
+                            reader.close();
+                        }
+                        //return new FileNode(file.getName(), file, indexes, substring.getText());
+                    });
+                    main_node.Add(find_res);
+                    process.setText("done");
                 });
-
-                System.out.printf("end finding\n");
             }
         });
         c.gridx = 2;
         c.gridy = 0;
         c.gridwidth = 1;
-        c.gridheight = 4;
+        c.gridheight = 5;
         c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH;

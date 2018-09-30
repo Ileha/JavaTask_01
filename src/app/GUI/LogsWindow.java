@@ -76,7 +76,7 @@ public class LogsWindow extends JFrame implements MouseWheelListener  {
         scrollBar.setMaximum((int) doc.Getlenght());
 
         scrollBar.addAdjustmentListener( e -> {
-            int char_count = 10000;
+            int char_count = 9000;
             String text = doc.GetBitOfText(e.getValue()/max(), char_count);
             textArea.setText(text);
             try {

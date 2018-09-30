@@ -10,11 +10,11 @@ public class FileNode extends LeafNode {
     public double[] rel_indexes;
     public String word;
 
-    public FileNode(String name, File data, double[] rel_indexes, String word) {
+    public FileNode(String name, File data) {
         super(name);
         file = data;
-        this.rel_indexes = rel_indexes;
-        this.word = word;
+//        this.rel_indexes = rel_indexes;
+//        this.word = word;
     }
 
     public int substring_char_count() {

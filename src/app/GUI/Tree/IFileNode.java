@@ -15,7 +15,7 @@ public abstract class IFileNode implements TreeNode {
         this.name = name;
     }
 
-    protected final TreeFilesNode TGetRoot() {
+    protected final TreeFilesNode TGetRoot() throws ClassCastException {
         IFileNode node = this;
         while (node._parent != null) {
             node = node._parent;
@@ -24,23 +24,27 @@ public abstract class IFileNode implements TreeNode {
     }
 
     @Override
-    public TreeNode getParent() {
+    public IFileNode getParent() {
         return _parent;
     }
 
-    public final void Add(IFileNode child) {
+    public synchronized final void Add(IFileNode child) {
         try {
             OnAdd(child);
             child._parent = this;
         }
-        catch (Exception err) {}
+        catch (Exception err) {
+            err.printStackTrace();
+        }
     }
     public final void Remove() {
         try {
             _parent.OnRemove(this);
             _parent = null;
         }
-        catch (Exception err) {}
+        catch (Exception err) {
+            err.printStackTrace();
+        }
     }
 
     protected abstract void OnRemove(IFileNode node);

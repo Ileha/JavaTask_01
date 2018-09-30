@@ -15,7 +15,7 @@ public class BagNode extends IFileNode implements Enumeration {
     }
 
     @Override
-    protected void OnRemove(IFileNode node) {
+    protected synchronized void OnRemove(IFileNode node) {
         int[] indexes = new int[1];
         indexes[0] = getIndex(node);
         if (indexes[0] == -1) { return; }
@@ -23,7 +23,10 @@ public class BagNode extends IFileNode implements Enumeration {
         Object[] childs = new Object[1];
         childs[0] = node;
         TreeModelEvent e = new TreeModelEvent(this, path, indexes ,childs);
-        TGetRoot().ExecuteEvent((listener) -> listener.treeNodesRemoved(e));
+        try {
+            TGetRoot().ExecuteEvent((listener) -> listener.treeNodesRemoved(e));
+        }
+        catch (ClassCastException err) {}
         bag.remove(indexes[0]);
     }
 
@@ -36,7 +39,10 @@ public class BagNode extends IFileNode implements Enumeration {
         Object[] childs = new Object[1];
         childs[0] = child;
         TreeModelEvent e = new TreeModelEvent(this, path, indexes ,childs);
-        TGetRoot().ExecuteEvent((listener) -> listener.treeNodesInserted(e));
+        try {
+            TGetRoot().ExecuteEvent((listener) -> listener.treeNodesInserted(e));
+        }
+        catch (ClassCastException err) {}
     }
 
     @Override
