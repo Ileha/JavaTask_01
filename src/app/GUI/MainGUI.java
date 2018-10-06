@@ -12,14 +12,15 @@ import java.util.concurrent.*;
 
 public class MainGUI extends JFrame {
 
-    private JTextField puth = new JTextField("");
-    private JTextField extensions = new JTextField(".txt");
+    private JTextField puth = new JTextField("./");
+    private JTextField extensions = new JTextField(".log");
     private JTextField substring = new JTextField("");
     private JButton button = new JButton("Find");
     private TreeFilesNode main_node = new TreeFilesNode("root");
     private JTree tree = new JTree((TreeModel) main_node);
     private JLabel process = new JLabel("<html>Choose path, indicate extension,<br> set text for find and press Find</html>");
-    private ExecutorService executor = Executors.newFixedThreadPool(1);
+    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    private JButton choose_file = new JButton("...");
 
     public MainGUI() {
         super("Program");
@@ -43,6 +44,24 @@ public class MainGUI extends JFrame {
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(puth, c);
 
+        c.gridx = 2;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.NONE;
+        this.add(choose_file, c);
+        choose_file.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                executor.submit(() -> {
+                    JFileChooser fileopen = new JFileChooser(puth.getText());
+                    fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int ret = fileopen.showDialog(null, "Open directory");
+                    if (ret == JFileChooser.APPROVE_OPTION) {
+                        puth.setText(fileopen.getSelectedFile().getAbsolutePath());
+                    }
+                });
+            }
+        });
+
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.NONE;
@@ -51,29 +70,31 @@ public class MainGUI extends JFrame {
 
         c.gridx = 1;
         c.gridy = 1;
+        c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(extensions, c);
 
         c.gridx = 0;
         c.gridy = 2;
+        c.gridwidth = 1;
         c.fill = GridBagConstraints.NONE;
         this.add(new JLabel("Substring: "), c);
 
         c.gridx = 1;
         c.gridy = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 2;
         this.add(substring, c);
 
         c.gridx = 0;
         c.gridy = 3;
-        c.gridwidth = 2;
+        c.gridwidth = 3;
         c.anchor = GridBagConstraints.PAGE_END;
         c.fill = GridBagConstraints.NONE;
         add(process, c);
 
         c.gridx = 0;
         c.gridy = 4;
-        c.gridwidth = 2;
         c.anchor = GridBagConstraints.PAGE_END;
         c.fill = GridBagConstraints.HORIZONTAL;
         this.add(button, c);
@@ -85,7 +106,7 @@ public class MainGUI extends JFrame {
 
                     main_node.RemoveAll();
                     BagNode find_res = new BagNode("results");
-                    FileFinder.GetFiels(find_res, puth.getText(), extensions.getText(), (file_node) -> {
+                    FileFinder.GetFiels(find_res, puth.getText(), String.format(".*.%s$", extensions.getText()), (file_node) -> {
                         FileReader reader = new FileReader(file_node.file);
                         try {
                             file_node.rel_indexes = Finder.GetEntriesRelative(reader, substring.getText());
@@ -104,7 +125,7 @@ public class MainGUI extends JFrame {
                 });
             }
         });
-        c.gridx = 2;
+        c.gridx = 3;
         c.gridy = 0;
         c.gridwidth = 1;
         c.gridheight = 5;

@@ -11,7 +11,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.concurrent.*;
 
 public class FileFinder {
-    private static ExecutorService executor = Executors.newWorkStealingPool();
+    private static ExecutorService executor = Executors.newFixedThreadPool(2*Runtime.getRuntime().availableProcessors());
 
     private static Callable callable(ConcurrentLinkedQueue<FileNode> queue, FindExpression FindFunc) {
         return () -> {
@@ -19,7 +19,7 @@ public class FileFinder {
             while ((poll_node = queue.poll()) != null) {
                 try {
                     String threadName = Thread.currentThread().getName();
-                    System.out.printf("Starn handler task %s\n", threadName);
+                    System.out.printf("Start handler task %s for handle %s\n", threadName, poll_node.toString());
                     FindFunc.Action(poll_node);
                 }
                 catch (Exception err) {
@@ -34,7 +34,7 @@ public class FileFinder {
         ConcurrentLinkedQueue<FileNode> queue = new ConcurrentLinkedQueue<FileNode>();
         HelpGetFiels(Pattern.compile(pattern), new File(path), out, queue);
         List<Callable<Integer>> callables = new ArrayList<Callable<Integer>>();
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors()*2; i++) {
             callables.add(callable(queue, FindFunc));
         }
         try {
