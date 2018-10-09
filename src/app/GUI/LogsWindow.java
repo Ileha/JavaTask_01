@@ -38,12 +38,13 @@ public class LogsWindow extends JFrame implements MouseWheelListener  {
     private JScrollBar scrollBar = new JScrollBar(Adjustable.VERTICAL);
     private ProcessDoc doc = null;
     private DefaultHighlighter.DefaultHighlightPainter highlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+    private int char_count = 9000;
 
 
     public LogsWindow(FileNode data, int pos_x, int pos_y) {
         super(data.toString());
         this.data = data;
-        doc = new ProcessDoc(data.file);
+        doc = new ProcessDoc(data.file, char_count);
 
         this.setBounds(20+pos_x, 20+pos_y, 500, 500);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -76,8 +77,8 @@ public class LogsWindow extends JFrame implements MouseWheelListener  {
         scrollBar.setMaximum((int) doc.Getlenght());
 
         scrollBar.addAdjustmentListener( e -> {
-            int char_count = 9000;
-            String text = doc.GetBitOfText(e.getValue()/max(), char_count);
+
+            String text = doc.GetBitOfText(e.getValue()/max());
             textArea.setText(text);
             try {
                 int[] current_indexes = Finder.GetEntries(text, data.word);

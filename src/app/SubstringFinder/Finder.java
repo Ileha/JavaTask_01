@@ -53,6 +53,7 @@ public class Finder {
                 if (offset_at_last == templateLen){
                     entery_indexes.add(sourse_index-templateLen+1);
                     offset_at_last=0;
+                    //sourse_index=Math.min(sourse_index + templateLen, sourceLen-1);
                     break;
                 }
             }
@@ -75,6 +76,7 @@ public class Finder {
         }
         try {
             res = source.read(array, array.length-shift, shift);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,10 +100,11 @@ public class Finder {
                 if (offset_at_last == template_arr.length){
                     entery_indexes.add(sourse_index-template_arr.length);
                     offset_at_last=0;
+                    //ReadShift(source_buff, source_buff.length, source);
                     break;
                 }
             }
-            int shift = offsetTable.Get(source_buff[source_buff.length-(1+offset_at_last)]);
+            int shift = offsetTable.Get(source_buff[source_buff.length-1]);
             read_count = ReadShift(source_buff, shift, source);
             if (read_count != shift) { break; }
             sourse_index+=read_count;
@@ -129,10 +132,11 @@ public class Finder {
                 if (offset_at_last == template_arr.length){
                     entery_indexes.add(sourse_index-template_arr.length);
                     offset_at_last=0;
+                    //ReadShift(source_buff, source_buff.length, source);
                     break;
                 }
             }
-            int shift = offsetTable.Get(source_buff[source_buff.length-(1+offset_at_last)]);
+            int shift = offsetTable.Get(source_buff[source_buff.length-1]);
             read_count = ReadShift(source_buff, shift, source);
             if (read_count != shift) {
                 char_count = sourse_index+shift;
