@@ -4,38 +4,33 @@ import java.io.*;
 
 class viewer {
     private bytebuffer data;
-
     private int start_decode = 0;
     private int count_decode;
+    private IBlock func;
 
     public viewer(int buffer_lenght, RandomAccessFile read_file) {
-        data = new bytebuffer(buffer_lenght, read_file);
+        data = new bytebuffer(buffer_lenght*2, read_file);
         count_decode = buffer_lenght;
+        func = (index) -> {
+            return (index-(index%buffer_lenght));
+        };
     }
 
     public String GetBitOfText(long index) {
-        long overload = index+data.lenght();
+        long start_buffer = func.GetStartBy(index);
 
-        long index_read = 0;
+        long overload = start_buffer+data.lenght()/2;
+
         if (overload > data.GetFilelenght()) {
             int value_overload = (int)(overload - data.GetFilelenght());
-            index_read = index - value_overload;
-            if (index_read < 0) {
-                start_decode = (int)index;
-                count_decode = data.lenght() - value_overload;
-                index_read = 0;
-            }
-            else {
-                start_decode = value_overload;
-                count_decode = data.lenght() - start_decode;
-            }
+            start_decode = (int)(index - start_buffer);
+            count_decode = data.lenght()/2-value_overload;
         }
         else  {
-            start_decode = 0;
-            count_decode = data.lenght();
-            index_read = index;
+            start_decode = (int)(index - start_buffer);
+            count_decode = data.lenght()/2;
         }
-        data.SetBuffer(index_read);
+        data.SetBuffer(start_buffer);
         return GetCurrentData();
     }
 
@@ -55,6 +50,29 @@ class viewer {
     public void Dispose() {
         data.Dispose();
     }
+
+    /*
+    public int find(long x, long[] array) {
+        int i = -1;
+        if (array != null) {
+            int low = 0, high = array.length, mid;
+            while (low < high) {
+                mid = (low + high)/2; // Можно заменить на: (low + high) >>> 1, чтоб не возникло переполнение целого
+                if (x == array[mid]) {
+                    i = mid;
+                    break;
+                } else {
+                    if (x <= array[mid]) {
+                        high = mid;
+                    } else {
+                        low = mid + 1;
+                    }
+                }
+            }
+        }
+        return i;
+    }
+    */
 }
 
 class bytebuffer {
