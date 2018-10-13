@@ -19,7 +19,7 @@ public class FileFinder {
             while ((poll_node = queue.poll()) != null) {
                 try {
                     String threadName = Thread.currentThread().getName();
-                    System.out.printf("Start handler task %s for handle %s\n", threadName, poll_node.toString());
+                    //System.out.printf("Start handler task %s for handle %s\n", threadName, poll_node.toString());
                     FindFunc.Action(poll_node);
                 }
                 catch (Exception err) {

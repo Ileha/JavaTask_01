@@ -140,7 +140,7 @@ public class MainGUI extends JFrame {
                 TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
                 if(selRow != -1) {
                     if(e.getClickCount() == 2) {
-                        System.out.printf("double - %s\n", selPath.getLastPathComponent().toString());
+                        //System.out.printf("double - %s\n", selPath.getLastPathComponent().toString());
                         IFileNode click = (IFileNode)selPath.getLastPathComponent();
                         if (click.isLeaf()) {
                             LogsWindow win = new LogsWindow((FileNode) click, getX(), getY());
