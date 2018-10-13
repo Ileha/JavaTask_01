@@ -2,6 +2,10 @@
 .idea/
 *.sln.iml
 
+# Maven
+log/
+target/
+
 # Mac OS
 .DS_Store
 .AppleDouble
